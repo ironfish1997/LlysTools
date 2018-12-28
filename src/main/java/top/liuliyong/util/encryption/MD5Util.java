@@ -1,4 +1,4 @@
-package util.encryption;
+package top.liuliyong.util.encryption;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
