@@ -1,19 +1,21 @@
-package util.http.impl;
+package top.liuliyong.util.http.impl;
 
-import util.http.HttpUtil;
+import com.alibaba.fastjson.JSON;
 import com.google.api.client.http.*;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.http.json.JsonHttpContent;
 import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.JsonParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.FieldInfo;
 import com.google.api.client.util.Lists;
+import top.liuliyong.util.http.HttpUtil;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -25,16 +27,16 @@ public class GenericHttpUtil implements HttpUtil {
     private static final HttpRequestFactory REQUEST_FACTORY = new NetHttpTransport().createRequestFactory();
     private static final JsonFactory JSON_FACTORY = new JacksonFactory();
 
-    protected GenericHttpUtil(){
+    protected GenericHttpUtil() {
 
     }
 
-    public static String doGet(String url, Map<String, Object> headerFields, Map<String, Object> params, Integer timeout) throws IOException {
+    public static Map<String, Object> doGet(String url, Map<String, Object> headerFields, Map<String, Object> params, Integer timeout) throws IOException {
         try {
             url = getParamsUrl(url, params);
             HttpRequest request = REQUEST_FACTORY.buildGetRequest(new GenericUrl(url));
             setRequestHeaders(headerFields, request, timeout);
-            return getResponseResultString(request);
+            return getResponseResult(request);
         } catch (IOException e) {
             e.printStackTrace();
             throw e;
@@ -42,31 +44,57 @@ public class GenericHttpUtil implements HttpUtil {
     }
 
 
-    public static String doPost(String url, Map<String, Object> headerFields, Map<String, Object> bodyParams, Integer timeout) throws IOException {
+    public static Map<String, Object> doPost(String url, Map<String, Object> headerFields, Map<String, Object> bodyParams, Integer timeout) throws IOException {
         try {
             HttpContent content = new JsonHttpContent(JSON_FACTORY, bodyParams);
             HttpRequest request = REQUEST_FACTORY.buildPostRequest(new GenericUrl(url), content);
             setRequestHeaders(headerFields, request, timeout);
-            return getResponseResultString(request);
+            return getResponseResult(request);
         } catch (IOException e) {
             e.printStackTrace();
             throw e;
         }
     }
 
-    public static String doPut(String url, Map<String, Object> headerFields, Map<String, Object> bodyParams, Integer timeout) throws IOException {
+    public static Map<String, Object> doPost(String url, Map<String, Object> headerFields, String bodyParams, Integer timeout) throws IOException {
+        try {
+            Map body = JSON.parseObject(bodyParams, HashMap.class);
+            HttpContent content = new JsonHttpContent(JSON_FACTORY, body);
+            HttpRequest request = REQUEST_FACTORY.buildPostRequest(new GenericUrl(url), content);
+            setRequestHeaders(headerFields, request, timeout);
+            return getResponseResult(request);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    public static Map<String, Object> doPut(String url, Map<String, Object> headerFields, Map<String, Object> bodyParams, Integer timeout) throws IOException {
         try {
             HttpContent content = new JsonHttpContent(JSON_FACTORY, bodyParams);
             HttpRequest request = REQUEST_FACTORY.buildPutRequest(new GenericUrl(url), content);
             setRequestHeaders(headerFields, request, timeout);
-            return getResponseResultString(request);
+            return getResponseResult(request);
         } catch (IOException e) {
             e.printStackTrace();
             throw e;
         }
     }
 
-    public static Map getHead(String url, Map<String, Object> headerFields, Map<String, Object> params, Integer timeout) throws IOException {
+    public static Map<String, Object> doPut(String url, Map<String, Object> headerFields, String bodyParams, Integer timeout) throws IOException {
+        try {
+            Map body = JSON.parseObject(bodyParams, HashMap.class);
+            HttpContent content = new JsonHttpContent(JSON_FACTORY, body);
+            HttpRequest request = REQUEST_FACTORY.buildPutRequest(new GenericUrl(url), content);
+            setRequestHeaders(headerFields, request, timeout);
+            return getResponseResult(request);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    public static Map<String, Object> getHead(String url, Map<String, Object> headerFields, Map<String, Object> params, Integer timeout) throws IOException {
         try {
             if (url == null) throw new NullPointerException("URL cannot be null");
             url = getParamsUrl(url, params);
@@ -82,30 +110,34 @@ public class GenericHttpUtil implements HttpUtil {
         }
     }
 
-    public static String doDelete(String url, Map<String, Object> params, Integer timeout) throws IOException {
+    public static Map<String, Object> doDelete(String url, Map<String, Object> params, Integer timeout) throws IOException {
         try {
             url = getParamsUrl(url, params);
             HttpRequest request = REQUEST_FACTORY.buildDeleteRequest(new GenericUrl(url));
             setRequestHeaders(null, request, timeout);
-            return getResponseResultString(request);
+            return getResponseResult(request);
         } catch (IOException e) {
             e.printStackTrace();
             throw e;
         }
     }
 
-    private static String getResponseResultString(HttpRequest request) throws IOException {
+    private static Map<String, Object> getResponseResult(HttpRequest request) throws IOException {
         HttpResponse response = request.execute();
         if (response.getStatusCode() != 200) {
-            return response.getStatusMessage();
+            Map<String, Object> error = new HashMap<>();
+            error.put("status", response.getStatusCode());
+            error.put("message", response.getStatusMessage());
         }
-        BufferedReader reader = new BufferedReader(new InputStreamReader(response.getContent(), StandardCharsets.UTF_8));
-        StringBuilder result = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            result.append(line);
+        StringBuilder sb = new StringBuilder();
+        BufferedReader br = new BufferedReader(new InputStreamReader(response.getContent()));
+        String s = "";
+        while ((s = br.readLine()) != null) {
+            sb.append(s);
         }
-        return result.toString();
+        JsonParser parser = JSON_FACTORY.createJsonParser(sb.toString());
+        Map result = parser.parse(Map.class);
+        return result;
     }
 
     private static String getParamsUrl(String url, Map<String, Object> params) throws UnsupportedEncodingException {
@@ -115,9 +147,9 @@ public class GenericHttpUtil implements HttpUtil {
             StringBuilder urlBuilder = new StringBuilder(url);
             while (inter.hasNext()) {
                 Map.Entry entry = (Map.Entry) inter.next();
-                String key = java.net.URLEncoder.encode(entry.getKey()+"",
+                String key = java.net.URLEncoder.encode(entry.getKey() + "",
                         "utf-8");
-                String val = java.net.URLEncoder.encode( entry.getValue()+"",
+                String val = java.net.URLEncoder.encode(entry.getValue() + "",
                         "utf-8");
                 urlBuilder.append(key).append("=").append(val).append("&");
             }
