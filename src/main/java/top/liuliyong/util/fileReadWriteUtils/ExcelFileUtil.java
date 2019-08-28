@@ -76,16 +76,6 @@ public class ExcelFileUtil {
         return cache;
     }
 
-    private List<List<String>> getRecords() throws IOException {
-        List<List<String>> lines = null;
-            if (fileType == 1) {
-                lines = readXls(filePath);
-            } else {
-                lines = readXlsx(filePath);
-            }
-        return lines;
-    }
-
 
     public static List<List<String>> readXls(String path) throws IOException {
         InputStream is = new FileInputStream(path);
@@ -223,5 +213,15 @@ public class ExcelFileUtil {
             default:
                 return "";
         }
+    }
+
+    private List<List<String>> getRecords() throws IOException {
+        List<List<String>> lines = null;
+        if (fileType == 1) {
+            lines = readXls(filePath);
+        } else {
+            lines = readXlsx(filePath);
+        }
+        return lines;
     }
 }

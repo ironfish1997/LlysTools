@@ -1,6 +1,7 @@
 package top.liuliyong.util.fileReadWriteUtils;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
@@ -9,50 +10,24 @@ import java.util.Properties;
  * 存取properties文件
  */
 public class PropertiesFileHandler {
-    private volatile static PropertiesFileHandler propUtil;
-    private static Properties prop;
+    private Properties prop;
     private String filePath;
 
-    private PropertiesFileHandler(){
-
-    }
 
     //读取项目内部的properties文件，isIn设为true
-    public static PropertiesFileHandler PropertiesFileHandler(String filePath, boolean isIn) throws IOException {
-        if (propUtil == null) {
-            synchronized (PropertiesFileHandler.class) {
-                if (propUtil == null) {
-                    propUtil=new PropertiesFileHandler();
-                    Properties props = new Properties();
-                    propUtil.filePath = filePath;
-                    Properties tempProp = new Properties();
-                    String currentEncode;
-                    try {
-                        InputStream inStream;
-                        if (!isIn) {
-                            inStream = new FileInputStream(filePath);
-                        } else {
-                            inStream = PropertiesFileHandler.class.getClassLoader().getResourceAsStream(filePath);
-                        }
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(inStream, "UTF-8"));
-                        tempProp.load(reader);
-                        currentEncode = tempProp.getProperty("properties_encode");
-                    }catch (IOException e){
-                        throw e;
-                    }
-                    InputStream inStream;
-                    if (!isIn) {
-                        inStream = new FileInputStream(filePath);
-                    } else {
-                        inStream = PropertiesFileHandler.class.getClassLoader().getResourceAsStream(filePath);
-                    }
-                    BufferedReader encodingCorrectReader = new BufferedReader(new InputStreamReader(inStream, currentEncode));
-                    props.load(encodingCorrectReader);
-                    prop = props;
-                }
-            }
+    public PropertiesFileHandler(String filePath, boolean isIn) throws IOException {
+        Properties props = new Properties();
+        InputStream inStream;
+        if (!isIn) {
+            inStream = new FileInputStream(filePath);
+        } else {
+            inStream = PropertiesFileHandler.class.getClassLoader().getResourceAsStream(filePath);
         }
-        return propUtil;
+        assert inStream != null;
+        BufferedReader encodingCorrectReader = new BufferedReader(new InputStreamReader(inStream, StandardCharsets.UTF_8));
+        props.load(encodingCorrectReader);
+        this.prop = props;
+        this.filePath = filePath;
     }
 
     public String getProperty(String propName) {

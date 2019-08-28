@@ -27,10 +27,6 @@ public class GenericHttpUtil implements HttpUtil {
     private static final HttpRequestFactory REQUEST_FACTORY = new NetHttpTransport().createRequestFactory();
     private static final JsonFactory JSON_FACTORY = new JacksonFactory();
 
-    protected GenericHttpUtil() {
-
-    }
-
     public static Map<String, Object> doGet(String url, Map<String, Object> headerFields, Map<String, Object> params, Integer timeout) throws IOException {
         try {
             url = getParamsUrl(url, params);
