@@ -1,4 +1,4 @@
-package top.liuliyong.util.http.impl;
+package top.liuliyong.util.http;
 
 import com.alibaba.fastjson.JSON;
 import com.google.api.client.http.*;
@@ -9,7 +9,6 @@ import com.google.api.client.json.JsonParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.FieldInfo;
 import com.google.api.client.util.Lists;
-import top.liuliyong.util.http.HttpUtil;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,7 +22,7 @@ import java.util.Map;
 /***
  * 基于google httpClient的http请求工具包
  */
-public class GenericHttpUtil implements HttpUtil {
+public class GenericHttpUtil {
     private static final HttpRequestFactory REQUEST_FACTORY = new NetHttpTransport().createRequestFactory();
     private static final JsonFactory JSON_FACTORY = new JacksonFactory();
 
@@ -106,11 +105,11 @@ public class GenericHttpUtil implements HttpUtil {
         }
     }
 
-    public static Map<String, Object> doDelete(String url, Map<String, Object> params, Integer timeout) throws IOException {
+    public static Map<String, Object> doDelete(String url, Map<String, Object> headerFields, Map<String, Object> params, Integer timeout) throws IOException {
         try {
             url = getParamsUrl(url, params);
             HttpRequest request = REQUEST_FACTORY.buildDeleteRequest(new GenericUrl(url));
-            setRequestHeaders(null, request, timeout);
+            setRequestHeaders(headerFields, request, timeout);
             return getResponseResult(request);
         } catch (IOException e) {
             e.printStackTrace();
