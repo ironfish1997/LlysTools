@@ -34,7 +34,6 @@
             </plugin>
         </plugins>
     </build>
-
     <dependencies>
         <!-- https://mvnrepository.com/artifact/com.google.http-client/google-http-client -->
         <dependency>
@@ -42,6 +41,13 @@
             <artifactId>google-http-client</artifactId>
             <version>1.22.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/com.google.http-client/google-http-client-jackson2 -->
         <dependency>
             <groupId>com.google.http-client</groupId>
