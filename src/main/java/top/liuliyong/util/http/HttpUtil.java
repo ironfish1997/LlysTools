@@ -12,7 +12,11 @@ public class HttpUtil {
 
     private static final MediaType JSON = MediaType.parse("application/json;charset=utf-8");
 
-    private static OkHttpClient okHttpClient;
+    private static final OkHttpClient okHttpClient = new OkHttpClient.Builder()
+            .readTimeout(30, TimeUnit.SECONDS)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .connectionPool(new ConnectionPool(1000, 1000, TimeUnit.SECONDS)).build();
 
     /**
      * 发送post请求
@@ -31,9 +35,6 @@ public class HttpUtil {
                 "Content-Type", "application/json",
                 "session_id", sessionId);
         Request request = new Request.Builder().headers(headers).url(url).post(body).build();
-        if (okHttpClient == null) {
-            okHttpClient = new OkHttpClient();
-        }
         Response response = okHttpClient.newCall(request).execute();
         return response.body().string();
     }
@@ -52,13 +53,6 @@ public class HttpUtil {
                 "Content-Type", "application/json",
                 "session_id", sessionId);
         Request request = new Request.Builder().headers(headers).url(url).build();
-        if (okHttpClient == null) {
-            OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder()
-                    .readTimeout(30, TimeUnit.SECONDS)
-                    .connectTimeout(30, TimeUnit.SECONDS)
-                    .writeTimeout(30, TimeUnit.SECONDS);
-            okHttpClient = httpClientBuilder.build();
-        }
         Response response = okHttpClient.newCall(request).execute();
         return response.body().string();
     }
