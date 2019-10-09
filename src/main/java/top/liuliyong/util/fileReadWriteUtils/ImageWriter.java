@@ -1,4 +1,4 @@
-package com.yitutech.olive.sdd3501.base.util.fileReadWriteUtils;
+package top.liuliyong.util.fileReadWriteUtils;
 
 
 import java.io.File;
