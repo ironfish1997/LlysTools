@@ -1,4 +1,4 @@
-package top.liuliyong.util.encryption;
+package com.yitutech.olive.sdd3501.base.util.encryption;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

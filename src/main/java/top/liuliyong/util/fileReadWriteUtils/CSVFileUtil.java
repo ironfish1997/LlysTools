@@ -1,6 +1,8 @@
-package top.liuliyong.util.fileReadWriteUtils;
+package com.yitutech.olive.sdd3501.base.util.fileReadWriteUtils;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -22,9 +24,7 @@ public class CSVFileUtil {
             fis = new FileInputStream(filename);
             isw = new InputStreamReader(fis, ENCODE);
             br = new BufferedReader(isw);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

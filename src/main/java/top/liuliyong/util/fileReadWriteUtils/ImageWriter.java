@@ -1,9 +1,10 @@
-package top.liuliyong.util.fileReadWriteUtils;
+package com.yitutech.olive.sdd3501.base.util.fileReadWriteUtils;
 
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Base64;
 
 /**
  * @Author liyong.liu
@@ -19,12 +20,12 @@ public class ImageWriter {
         this.basePath = basePath;
     }
 
-    public void writeImage(String imageName, byte[] content) {
-        writeImage(basePath + "/" + imageName, content);
+    public boolean writeImage(String imageName, byte[] content) {
+        return writeImage(basePath + "/" + imageName, content);
     }
 
 
-    public static void writeImage(String basePath, String imageName, byte[] content) throws IOException {
+    public static boolean writeImage(String basePath, String imageName, byte[] content) throws IOException {
         if (basePath == null || basePath.trim().length() == 0 || imageName == null || imageName.length() == 0 || content == null || content.length == 0) {
             throw new IllegalArgumentException("illegal path or content");
         }
@@ -35,7 +36,7 @@ public class ImageWriter {
                 baseDir.mkdirs();
             }
             if (imgFile.exists()) {
-                return;
+                throw new IllegalArgumentException("image has existed");
             }
         }
         imgFile.createNewFile();
@@ -43,5 +44,11 @@ public class ImageWriter {
         fs.write(content);
         fs.flush();
         fs.close();
+        return true;
+    }
+
+    public static boolean writeImageBase64(String basePath, String imageName, String imageBase64) throws IOException {
+        byte[] content = Base64.getDecoder().decode(imageBase64);
+        return writeImage(basePath, imageName, content);
     }
 }

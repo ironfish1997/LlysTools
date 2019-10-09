@@ -1,4 +1,4 @@
-package top.liuliyong.util.fileReadWriteUtils;
+package com.yitutech.olive.sdd3501.base.util.fileReadWriteUtils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -10,24 +10,31 @@ import java.util.Properties;
  * 存取properties文件
  */
 public class PropertiesFileHandler {
-    private Properties prop;
-    private String filePath;
+    private volatile Properties prop;
+    private volatile String filePath;
 
 
     //读取项目内部的properties文件，isIn设为true
     public PropertiesFileHandler(String filePath, boolean isIn) throws IOException {
         Properties props = new Properties();
         InputStream inStream;
+        File fatherDir = new File("./props/");
+        File file = new File("./props/" + filePath);
+        if (!fatherDir.exists()) {
+            fatherDir.mkdirs();
+        }
+        if (!file.exists())
+            file.createNewFile();
         if (!isIn) {
-            inStream = new FileInputStream(filePath);
+            inStream = new FileInputStream("./props/" + filePath);
         } else {
-            inStream = PropertiesFileHandler.class.getClassLoader().getResourceAsStream(filePath);
+            inStream = PropertiesFileHandler.class.getClassLoader().getResourceAsStream("./props/" + filePath);
         }
         assert inStream != null;
         BufferedReader encodingCorrectReader = new BufferedReader(new InputStreamReader(inStream, StandardCharsets.UTF_8));
         props.load(encodingCorrectReader);
         this.prop = props;
-        this.filePath = filePath;
+        this.filePath = "./props/" + filePath;
     }
 
     public String getProperty(String propName) {
@@ -66,6 +73,7 @@ public class PropertiesFileHandler {
             output = new FileOutputStream(filePath);
             properties.setProperty(key, value);
             properties.store(output, "user modify" + new Date().toString());// 保存键值对到文件中
+            output.flush();
         } catch (IOException io) {
             io.printStackTrace();
         } finally {

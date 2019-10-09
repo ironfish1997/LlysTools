@@ -1,4 +1,4 @@
-package top.liuliyong.util.fileReadWriteUtils;
+package com.yitutech.olive.sdd3501.base.util.fileReadWriteUtils;
 
 
 import java.io.IOException;
@@ -9,28 +9,19 @@ import java.io.IOException;
 public class BreakPointHandler {
     private PropertiesFileHandler propertiesFileHandler;
 
-    private static class BreakPointHandlerHolder {
-        private static final BreakPointHandler INSTANCE = new BreakPointHandler();
-    }
-
-    public static BreakPointHandler getInstance() {
-        return BreakPointHandlerHolder.INSTANCE;
-    }
-
-    private BreakPointHandler() {
+    public BreakPointHandler(String propertiesName) {
         try {
-            propertiesFileHandler = new PropertiesFileHandler("./time.properties", false);
+            propertiesFileHandler = new PropertiesFileHandler(String.format("./%s.properties", propertiesName), false);
         } catch (IOException e) {
             throw new RuntimeException("read breakpoint file error", e);
         }
     }
 
-    public Long getBreakPoint() {
-        String breakPageNo = propertiesFileHandler.getProperty("breakPageNo");
-        return breakPageNo == null ? null : Long.parseLong(breakPageNo);
+    public String getBreakPoint() {
+        return propertiesFileHandler.getProperty("breakPoint");
     }
 
-    public void setBreakPoint(Long breakPageNum) {
-        propertiesFileHandler.setProperty("breakPageNo", String.valueOf(breakPageNum));
+    public void setBreakPoint(String breakPageNum) {
+        propertiesFileHandler.setProperty("breakPoint", String.valueOf(breakPageNum));
     }
 }
