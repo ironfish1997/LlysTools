@@ -1,2 +1,17 @@
 # LlysTools
-My ToolBox, and that's all
+
+工具结构
+```
+util
+├── encryption
+│   ├── MD5Util
+├── fileReadWriteUtils
+│   ├── BreakPointHandler
+│   ├── CSVFileUtil
+│   ├── ExcelFileUtil
+│   ├── ImageWriter
+│   └── PropertiesFileHandler
+└── http
+    ├── HttpUtil
+    └── ImageHttpUtil
+```

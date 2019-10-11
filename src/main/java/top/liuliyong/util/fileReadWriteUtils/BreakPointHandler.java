@@ -1,6 +1,7 @@
 package top.liuliyong.util.fileReadWriteUtils;
 
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -11,7 +12,8 @@ public class BreakPointHandler {
 
     public BreakPointHandler(String propertiesName) {
         try {
-            propertiesFileHandler = new PropertiesFileHandler(String.format("./%s.properties", propertiesName), false);
+            checkIsPropFileExist(propertiesName);
+            propertiesFileHandler = new PropertiesFileHandler(String.format("./props/%s.properties", propertiesName), false);
         } catch (IOException e) {
             throw new RuntimeException("read breakpoint file error", e);
         }
@@ -21,7 +23,17 @@ public class BreakPointHandler {
         return propertiesFileHandler.getProperty("breakPoint");
     }
 
-    public void setBreakPoint(String breakPageNum) {
-        propertiesFileHandler.setProperty("breakPoint", String.valueOf(breakPageNum));
+    public void setBreakPoint(String breakPoint) {
+        propertiesFileHandler.coverProperty("breakPoint", String.valueOf(breakPoint));
+    }
+
+    private void checkIsPropFileExist(String propertiesName) throws IOException {
+        File fatherDir = new File("./props/");
+        File file = new File("./props/" + propertiesName + ".properties");
+        if (!fatherDir.exists()) {
+            fatherDir.mkdirs();
+        }
+        if (!file.exists())
+            file.createNewFile();
     }
 }
