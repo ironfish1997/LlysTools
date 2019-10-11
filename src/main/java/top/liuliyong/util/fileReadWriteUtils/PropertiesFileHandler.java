@@ -102,16 +102,6 @@ public class PropertiesFileHandler {
         return inStream;
     }
 
-//    private void checkIsPropFileExist(String filePath) throws IOException {
-//        File fatherDir = new File("./props/");
-//        File file = new File("./props/" + filePath);
-//        if (!fatherDir.exists()) {
-//            fatherDir.mkdirs();
-//        }
-//        if (!file.exists())
-//            file.createNewFile();
-//    }
-
     private boolean checkIsPropFileExist(String filePath) throws IOException {
         File file = new File(filePath);
         if (!file.exists())
