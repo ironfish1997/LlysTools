@@ -38,7 +38,7 @@ public class PropertiesFileHandler {
         BufferedReader encodingCorrectReader = new BufferedReader(new InputStreamReader(inStream, currentEncode));
         props.load(encodingCorrectReader);
         this.prop = props;
-        this.filePath =  filePath;
+        this.filePath = filePath;
     }
 
     public String getProperty(String propName) {
@@ -78,6 +78,7 @@ public class PropertiesFileHandler {
             properties.setProperty(key, value);
             properties.store(output, "user modify" + new Date().toString());// 保存键值对到文件中
             output.flush();
+            prop = properties;
         } catch (IOException io) {
             io.printStackTrace();
         } finally {
