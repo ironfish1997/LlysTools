@@ -1,4 +1,4 @@
-package top.liuliyong.util.fileReadWriteUtils;
+package top.liuliyong.util;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
